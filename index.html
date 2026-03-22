@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Planilla Vóley - Final</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial; background:#eaeaea; display:flex; justify-content:center; }
+.sheet { width:1200px; background:white; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.3);} 
+h2 { text-align:center; color:red; }
+table { border-collapse: collapse; width:100%; table-layout: fixed; }
+
+/* asegurar alineación perfecta entre tablas de jugadoras */
+.sheet table {
+  margin-top:0;
+}
+
+.sheet table tr {
+  height:28px;
+}
+
+.sheet table th {
+  height:28px;
+}
+td, th { border:1px solid black; text-align:center; font-size:12px; height:28px; line-height:28px; padding:0; width:70px; overflow:hidden; white-space:nowrap; }
+
+#tablaSet th:first-child, #tablaSet td:first-child {
+  width:25px;
+}
+
+/* Columna N° EXACTAMENTE igual que SET */
+#tablaSet th:first-child, #tablaSet td:first-child {
+  width:25px;
+  min-width:25px;
+  max-width:25px;
+}
+
+/* Tabla de N° (jugadoras) */
+.sheet div > div:first-child table {
+  table-layout: fixed;
+  width:25px;
+}
+
+.sheet div > div:first-child th,
+.sheet div > div:first-child td {
+  width:25px !important;
+  min-width:25px;
+  max-width:25px;
+  padding:0;
+}
+th { background:#f0f0f0; font-size:11px; }
+select { width:100%; border:none; height:100%; font-size:12px; }
+
+/* Columna N° jugadoras más angosta */
+.sheet div table td:first-child,
+.sheet div table th:first-child {
+  width:25px !important;
+  max-width:25px;
+  min-width:25px;
+}
+.cell { cursor:pointer; }
+
+/* Columna TOTAL en lila */
+
+
+/* popup */
+.popup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border:2px solid black;
+  padding:10px;
+  display:none;
+  gap:10px;
+}
+.popup button {
+  padding:14px;
+  font-size:18px;
+  min-width:50px;
+}
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div id="portada" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+  <img src="logo.png" alt="Escudo CReS" style="width:240px; margin-bottom:10px; display:block; background:transparent;">
+
+<button onclick="iniciarPartido()" style="width:220px; padding:15px 30px; font-size:16px; cursor:pointer; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold;">
+  INICIAR PARTIDO
+</button>
+<button onclick="verHistorial()" style="width:220px; margin-top:10px; padding:15px 30px; font-size:16px; cursor:pointer; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold;">
+  HISTORIAL DE PARTIDOS
+</button>
+
+<svg width="260" height="120" viewBox="0 0 260 120" style="margin-bottom:10px;">
+  <defs>
+    <path id="curve" d="M20,90 A110,110 0 0,0 240,90" />
+  </defs>
+  <text font-size="16" fill="black" font-family="Segoe UI, Arial, sans-serif" font-weight="600">
+    <textPath href="#curve" startOffset="50%" text-anchor="middle">
+      CLUB RESIDENTES SANTIAGUEÑOS
+    </textPath>
+  </text>
+</svg>
+</div>
+
+<!-- HISTORIAL -->
+<div id="historial" style="display:none; padding:20px;">
+  <h2>HISTORIAL DE PARTIDOS</h2>
+  <div id="listaHistorial"></div>
+  <br>
+  <button onclick="volverInicio()">VOLVER</button>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
+<div class="sheet">
+
+<div style="margin-bottom:10px;">
+<strong>Fecha:</strong> <input type="date" style="border:1px solid black;">
+<button onclick="volverPortada()" style="width:100%; padding:12px; margin-top:20px; background:#555; color:white; border:none; border-radius:8px;">
+  VOLVER
+</button>
+<button onclick="guardarPartido()" style="width:100%; padding:15px; margin-top:20px; background:#d32f2f; color:white; border:none;">
+  GUARDAR PARTIDO
+</button>
+</div>
+
+<h2>PLANILLA DE ESTADÍSTICA - CReS</h2>
+<div style="margin-bottom:10px;">
+<strong>Rival:</strong> <input type="text" style="border:1px solid black;"><br><br>
+<strong>Categoría:</strong> <input type="text" style="border:1px solid black;">
+</div>
+
+<!-- SETS -->
+<table id="tablaSet">
+<tr>
+<th rowspan="2">SET</th>
+<th colspan="6">CReS</th>
+<th colspan="6">RIVAL</th>
+</tr>
+<tr>
+<th>Saque</th><th>Error Rival</th><th>Ataque</th><th>Contraataque</th><th>Bloqueo</th><th>Puntos</th>
+<th>Saque</th><th>Error CReS</th><th>Ataque</th><th>Contraataque</th><th>Bloqueo</th><th>Puntos</th>
+</tr>
+<tbody id="setsBody"></tbody>
+</table>
+
+<br>
+
+<h3 style="margin-top:20px; border-top:2px solid black; padding-top:10px; color:red;">ESTADÍSTICAS JUGADORAS</h3>
+<!-- ACCIONES EN FILA CON UNA SOLA COLUMNA DE JUGADORAS -->
+<div style="display:flex; gap:5px; align-items:flex-start;">
+
+<!-- COLUMNA JUGADORAS -->
+<div>
+  <table>
+    <tr><th style="width:25px;">N°</th></tr>
+    <script>
+    for(let i=1;i<=12;i++){
+      document.write('<tr><td style="width:25px;">'+i+'</td></tr>');
+    }
+    </script>
+  </table>
+</div>
+
+<script>
+const acciones = [
+  {nombre:'RECEPCION', signos:['+','++','-','--']},
+  {nombre:'SAQUE', signos:['+','++','-','--']},
+  {nombre:'ATAQUE / CONTRA', signos:['+','-','0']},
+  {nombre:'BLOQUEO', signos:['+','¡','-']}
+];
+
+let currentCell = null;
+let currentSignos = [];
+
+acciones.forEach(acc=>{
+  document.write('<div style="flex:1">');
+  document.write(`<table style="width:100%; table-layout:fixed;"><tr><th colspan="4">${acc.nombre}</th><th style="width:25px; min-width:25px; max-width:25px;">%</th></tr>`);
+
+  for(let i=1;i<=12;i++){
+    document.write('<tr>');
+    for(let j=0;j<4;j++){
+      document.write(`<td class='cell' data-accion="${acc.nombre}" onclick='abrirPopup(this, ${JSON.stringify(acc.signos)})'></td>`);
+    }
+    document.write(`<td class='porcentaje' data-accion="${acc.nombre}" style="width:25px; min-width:25px; max-width:25px; padding:0;"></td>`);
+    document.write('</tr>');
+  }
+
+  document.write('</table></div>');
+});
+
+function abrirPopup(cell, signos){
+  currentCell = cell;
+  const popup = document.getElementById('popup');
+  popup.innerHTML = '';
+  signos.forEach(s=>{
+    const btn = document.createElement('button');
+    btn.innerText = s;
+    btn.onclick = ()=>{
+      currentCell.innerText = s;
+      popup.style.display='none';
+      calcularPorcentajes();
+    };
+    popup.appendChild(btn);
+  });
+  popup.style.display='flex';
+}
+
+function calcularPorcentajes(){
+  const filas = document.querySelectorAll('.sheet table tr');
+
+  filas.forEach((row, idx)=>{
+    const celdas = row.querySelectorAll('td.cell');
+    if(celdas.length===0) return;
+
+    const accion = celdas[0].dataset.accion;
+    let positivos = 0;
+    let total = 0;
+
+    celdas.forEach(td=>{
+      const v = td.innerText;
+      if(v==='') return;
+      total++;
+
+      if(accion==='RECEPCION' || accion==='SAQUE'){
+        if(v==='+' || v==='++') positivos++;
+      }
+      if(accion==='ATAQUE / CONTRA'){
+        if(v==='+') positivos++;
+      }
+      if(accion==='BLOQUEO'){
+        if(v==='+' || v==='¡') positivos++;
+      }
+    });
+
+    const celdaPorc = row.querySelector('.porcentaje');
+    if(celdaPorc){
+      celdaPorc.innerText = total>0 ? Math.round((positivos/total)*100)+'%' : '';
+    }
+  });
+}
+</script>
+
+</div>
+
+</div>
+
+<div id="popup" class="popup"></div>
+
+<script>
+const setsBody = document.getElementById('setsBody');
+
+function crearSelect(){
+  const select = document.createElement('select');
+  select.innerHTML = '<option value="">-</option>';
+  for(let i=1;i<=30;i++){
+    select.innerHTML += `<option>${i}</option>`;
+  }
+  return select;
+}
+
+for(let s=1;s<=5;s++){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${s}</td>`;
+
+  for(let i=0;i<5;i++){
+    let td=document.createElement('td');
+    td.appendChild(crearSelect());
+    tr.appendChild(td);
+  }
+
+  let pc=document.createElement('td'); pc.innerHTML='<input type="number" min="0" style="width:100%; border:none; text-align:center; color:blue;">'; tr.appendChild(pc);
+
+  for(let i=0;i<5;i++){
+    let td=document.createElement('td');
+    td.appendChild(crearSelect());
+    tr.appendChild(td);
+  }
+
+  let pr=document.createElement('td'); pr.innerHTML='<input type="number" min="0" style="width:100%; border:none; text-align:center; color:blue;">'; tr.appendChild(pr);
+
+  setsBody.appendChild(tr);
+}
+
+// FILA TOTAL
+const totalRow = document.createElement('tr');
+totalRow.innerHTML = '<td style="color:blue;"><strong>TOTAL</strong></td>' +
+  '<td colspan="5"></td>' +
+  '<td><input type="number" style="width:100%; border:none; text-align:center; color:blue;"></td>' +
+  '<td colspan="5"></td>' +
+  '<td><input type="number" style="width:100%; border:none; text-align:center; color:blue;"></td>';
+
+setsBody.appendChild(totalRow);
+
+   
+</script>
+
+
+
+
+
+</div>
+
+<script>
+function iniciarPartido(){
+  document.getElementById('portada').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+function guardarPartido(){
+  const rival = document.querySelector('input[type="text"]').value || 'Sin rival';
+  const fecha = new Date().toLocaleDateString();
+
+  const partido = {
+    fecha,
+    rival,
+    html: document.getElementById('app').innerHTML
+  };
+
+  let historial = JSON.parse(localStorage.getItem('partidos') || '[]');
+  historial.unshift(partido);
+  localStorage.setItem('partidos', JSON.stringify(historial));
+
+  alert('Partido guardado');
+}
+
+function verHistorial(){
+  document.getElementById('portada').style.display='none';
+  document.getElementById('historial').style.display='block';
+
+  const lista = document.getElementById('listaHistorial');
+  lista.innerHTML='';
+
+  const historial = JSON.parse(localStorage.getItem('partidos') || '[]');
+
+historial.forEach((p, i)=>{
+  const div = document.createElement('div');
+  div.style.border='1px solid black';
+  div.style.padding='10px';
+  div.style.margin='5px 0';
+
+  div.innerText = `${p.fecha} - vs ${p.rival}`;
+
+  const btnEliminar = document.createElement('button');
+  btnEliminar.innerText = 'ELIMINAR';
+  btnEliminar.style.marginLeft = '10px';
+
+  btnEliminar.onclick = (e)=>{
+    e.stopPropagation();
+    eliminarPartido(i);
+  };
+
+  div.appendChild(btnEliminar);
+
+  div.onclick = ()=> cargarPartido(i);
+
+  lista.appendChild(div);
+});
+}
+
+function cargarPartido(i){
+  const historial = JSON.parse(localStorage.getItem('partidos') || '[]');
+  document.getElementById('historial').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('app').innerHTML = historial[i].html;
+}
+
+function eliminarPartido(i){
+  let historial = JSON.parse(localStorage.getItem('partidos') || '[]');
+  historial.splice(i,1);
+  localStorage.setItem('partidos', JSON.stringify(historial));
+  verHistorial();
+}
+function volverInicio(){
+  document.getElementById('historial').style.display='none';
+  document.getElementById('portada').style.display='flex';
+}
+function volverPortada(){
+  alert('funciona');
+  document.getElementById('app').style.display='none';
+  document.getElementById('portada').style.display='flex';
+}
+</script>
+
+</body>
+</html>
