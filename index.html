@@ -6,9 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body { font-family: Arial; background:#eaeaea; display:flex; justify-content:center; }
+body {
+  overflow-x:auto;
+}
 .sheet { width:1200px; background:white; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.3);} 
 h2 { text-align:center; color:red; }
-table { border-collapse: collapse; width:100%; table-layout: fixed; }
+table { 
+  border-collapse: collapse; 
+  width:100%;
+  min-width:900px;
+}
 
 /* asegurar alineación perfecta entre tablas de jugadoras */
 .sheet table {
