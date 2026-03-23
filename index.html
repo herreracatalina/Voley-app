@@ -5,17 +5,10 @@
 <title>Planilla Vóley - Final</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: Arial; background:#eaeaea; display:flex; justify-content:center; }
-body {
-  overflow-x:auto;
-}
-.sheet { width:1200px; background:white; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.3);} 
+body { font-family: Arial; background:#eaeaea; display:flex; justify-content:center; overflow-x:auto;}
+.sheet { width:100%; max-width:1200px; background:white; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.3);} 
 h2 { text-align:center; color:red; }
-table { 
-  border-collapse: collapse; 
-  width:100%;
-  min-width:900px;
-}
+table { border-collapse: collapse; width:100%;}
 
 /* asegurar alineación perfecta entre tablas de jugadoras */
 .sheet table {
@@ -37,9 +30,9 @@ td, th { border:1px solid black; text-align:center; font-size:12px; height:28px;
 
 /* Columna N° EXACTAMENTE igual que SET */
 #tablaSet th:first-child, #tablaSet td:first-child {
-  width:25px;
-  min-width:25px;
-  max-width:25px;
+  width:31px;
+  min-width:31px;
+  max-width:31px;
 }
 
 /* Tabla de N° (jugadoras) */
@@ -299,9 +292,9 @@ for(let s=1;s<=5;s++){
 const totalRow = document.createElement('tr');
 totalRow.innerHTML = '<td style="color:blue;"><strong>TOTAL</strong></td>' +
   '<td colspan="5"></td>' +
-  '<td><input type="number" style="width:100%; border:none; text-align:center; color:blue;"></td>' +
+  '<td><input type="number" style="width:90%; border:none; text-align:center; color:blue;"></td>' +
   '<td colspan="5"></td>' +
-  '<td><input type="number" style="width:100%; border:none; text-align:center; color:blue;"></td>';
+  '<td><input type="number" style="width:90%; border:none; text-align:center; color:blue;"></td>';
 
 setsBody.appendChild(totalRow);
 
