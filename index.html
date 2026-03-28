@@ -7,8 +7,26 @@
 <title>Planilla Vóley - CReS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: Arial; background:#eaeaea; display:flex; justify-content:center; overflow-x:auto;}
-.sheet { width:100%; max-width:1200px; background:white; padding:15px; box-shadow:0 0 10px rgba(0,0,0,0.3);} 
+/* AJUSTES PARA DESPLAZAMIENTO EN CELULARES */
+body { 
+  font-family: Arial; 
+  background:#eaeaea; 
+  margin: 0;
+  padding: 0;
+  display: block; /* Cambiado para permitir scroll natural */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sheet { 
+  width: fit-content; /* Permite que el contenedor se estire según las tablas */
+  min-width: 100vw; 
+  background:white; 
+  padding:15px; 
+  box-shadow:0 0 10px rgba(0,0,0,0.3);
+  box-sizing: border-box;
+} 
+
 h2 { text-align:center; color:red; }
 table { border-collapse: collapse; width:100%;}
 .sheet table tr { height:28px; }
@@ -19,6 +37,9 @@ th { background:#f0f0f0; font-size:11px; }
 select { width:100%; border:none; height:100%; font-size:12px; }
 .cell { cursor:pointer; }
 .seleccionado { background-color: #AEC6CF !important; }
+
+/* Mejora para botones en pantallas táctiles */
+button { cursor: pointer; touch-action: manipulation; }
 </style>
 </head>
 <body>
@@ -26,15 +47,15 @@ select { width:100%; border:none; height:100%; font-size:12px; }
 <div id="portada" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;">
   <img src="logo.png" alt="Escudo CReS" style="width:240px; margin-bottom:10px; display:block; background:transparent;">
 
-  <button onclick="iniciarActividad('PARTIDO')" style="width:250px; padding:15px; font-size:16px; cursor:pointer; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">
+  <button onclick="iniciarActividad('PARTIDO')" style="width:250px; padding:15px; font-size:16px; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">
     INICIAR PARTIDO
   </button>
 
-  <button onclick="iniciarActividad('ENTRENAMIENTO')" style="width:250px; padding:15px; font-size:16px; cursor:pointer; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">
+  <button onclick="iniciarActividad('ENTRENAMIENTO')" style="width:250px; padding:15px; font-size:16px; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">
     INICIAR ENTRENAMIENTO
   </button>
 
-  <button onclick="verHistorial()" style="width:250px; padding:15px; font-size:16px; cursor:pointer; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">
+  <button onclick="verHistorial()" style="width:250px; padding:15px; font-size:16px; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">
     HISTORIAL
   </button>
 
@@ -46,7 +67,7 @@ select { width:100%; border:none; height:100%; font-size:12px; }
   </svg>
 </div>
 
-<div id="historial" style="display:none; padding:20px; width: 100%;">
+<div id="historial" style="display:none; padding:20px; width: 100%; box-sizing: border-box;">
   <h2>HISTORIAL</h2>
   <p style="text-align:center; font-size:12px; color:#666;">Seleccioná 2 para comparar o hacé clic en uno para ver detalle.</p>
   <div id="listaHistorial"></div>
@@ -54,9 +75,9 @@ select { width:100%; border:none; height:100%; font-size:12px; }
   <button onclick="volverInicio()" style="padding:15px; width:100%; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">VOLVER</button>
 </div>
 
-<div id="comparacion" style="display:none; padding:20px; width: 100%; background: white;">
+<div id="comparacion" style="display:none; padding:20px; width: 100%; background: white; box-sizing: border-box;">
   <h2 style="color: blue;">COMPARATIVA DE RENDIMIENTO</h2>
-  <div id="tablaComparativa"></div>
+  <div id="tablaComparativa" style="overflow-x: auto;"></div>
   <br>
   <button onclick="verHistorial()" style="width:100%; padding:15px; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">VOLVER AL HISTORIAL</button>
 </div>
@@ -69,282 +90,4 @@ select { width:100%; border:none; height:100%; font-size:12px; }
 
 <div style="width: 100%; margin-top: 15px; margin-bottom: 20px;">
   <div style="display: flex; gap: 10px; width: 100%;">
-    <button onclick="volverPortada()" style="flex: 1; padding: 10px; background: #555; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
-      VOLVER
-    </button>
-    <button onclick="guardarPartido()" style="flex: 1; padding: 10px; background: #555; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">
-      GUARDAR
-    </button>
-  </div>
-</div>
-
-<h2 id="tituloPrincipal">PLANILLA DE ESTADÍSTICA - CReS</h2>
-
-<div style="margin-bottom:10px;">
-<strong>Rival / Motivo:</strong> <input type="text" id="inputRival" style="border:1px solid black;"><br><br>
-<strong>Categoría:</strong> <input type="text" style="border:1px solid black;">
-</div>
-
-<table id="tablaSet">
-  <thead>
-    <tr><th rowspan="2">SET</th><th colspan="6">CReS</th><th colspan="6">RIVAL</th></tr>
-    <tr><th>Saque</th><th>Err.R</th><th>Atq</th><th>Contr</th><th>Bloq</th><th>Puntos</th><th>Saque</th><th>Err.C</th><th>Atq</th><th>Contr</th><th>Bloq</th><th>Puntos</th></tr>
-  </thead>
-  <tbody id="setsBody"></tbody>
-</table>
-
-<h3 style="margin-top:20px; border-top:2px solid black; padding-top:10px; color:red; text-align: center;">ESTADÍSTICAS JUGADORAS</h3>
-
-<div id="controlesRapidos" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; background: #f0f0f0; padding: 15px; border-radius: 8px; border: 1px solid #ccc; max-width: 600px; margin-left: auto; margin-right: auto;">
-  <div style="grid-column: span 6; text-align: center; margin-bottom: 5px;"><strong>Carga Rápida:</strong></div>
-  <button onclick="cargarValorRapido('++')" style="padding: 10px; font-size: 16px;">++</button>
-  <button onclick="cargarValorRapido('+')" style="padding: 10px; font-size: 16px;">+</button>
-  <button onclick="cargarValorRapido('0')" style="padding: 10px; font-size: 16px;">0</button>
-  <button onclick="cargarValorRapido('-')" style="padding: 10px; font-size: 16px;">-</button>
-  <button onclick="cargarValorRapido('--')" style="padding: 10px; font-size: 16px;">--</button>
-  <button onclick="cargarValorRapido('¡')" style="padding: 10px; font-size: 16px;">¡</button>
-</div>
-
-<div id="gridEstadisticas" style="display: grid; grid-template-columns: 80px repeat(4, 1fr); gap: 5px; overflow-x: auto; background: white; padding: 10px; align-items: flex-start; border: 1px solid #ddd;">
-  <div id="columnaID" style="grid-column: 1; display: grid; grid-template-rows: 30px repeat(12, 28px); min-width: 80px;">
-    <div style="height: 30px; font-weight: bold; background: #f0f0f0; border: 1px solid black; text-align: center; line-height: 30px; font-size: 10px;">ID</div>
-  </div>
-  <script>
-    const MAX_ACCIONES = 8; 
-    const accionesConfig = [
-      {nombre:'RECEPCION', signos:['++', '+', '-', '--']},
-      {nombre:'SAQUE', signos:['++', '+', '-', '--']},
-      {nombre:'ATAQUE', signos:['+', '-', '0']},
-      {nombre:'BLOQUEO', signos:['+', '¡', '-']}
-    ];
-    accionesConfig.forEach(acc => {
-      let tablaHtml = `<div style="display: grid; grid-template-rows: 30px repeat(12, 28px); width: 240px; border: 1px solid black; box-sizing: border-box;">
-        <div style="display: grid; grid-template-columns: repeat(${MAX_ACCIONES}, 25px) 40px; height: 30px; border-bottom: 1px solid black;">
-          <div style="grid-column: span ${MAX_ACCIONES}; background: #eee; text-align: center; line-height: 30px; font-size: 10px; font-weight: bold; border-right: 1px solid black;">${acc.nombre}</div>
-          <div style="background: #E39837; text-align: center; line-height: 30px; font-size: 11px; font-weight: bold;">%</div>
-        </div>`;
-      for(let i=1; i<=12; i++) {
-        tablaHtml += `<div style="display: grid; grid-template-columns: repeat(${MAX_ACCIONES}, 25px) 40px; height: 28px; border-bottom: 1px solid #ccc;">`;
-        for(let j=0; j<MAX_ACCIONES; j++) {
-          tablaHtml += `<div class='cell' data-accion="${acc.nombre}" onclick='seleccionarCelda(this)' style="width: 25px; height: 28px; border-right: 1px solid #ccc; text-align: center; line-height: 28px; font-size: 11px;"></div>`;
-        }
-        tablaHtml += `<div class="porcentaje-celda" style="width: 40px; height: 28px; font-weight: bold; background: #E39837; text-align: center; line-height: 28px; font-size: 11px;">0%</div>`;
-        tablaHtml += `</div>`;
-      }
-      tablaHtml += `</div>`;
-      document.write(tablaHtml);
-    });
-  </script>
-</div>
-</div>
-</div>
-
-<script>
-const setsBody = document.getElementById('setsBody');
-function crearSelect(){
-  const select = document.createElement('select');
-  select.innerHTML = '<option value="">-</option>';
-  for(let i=1;i<=30;i++) select.innerHTML += `<option>${i}</option>`;
-  return select;
-}
-for(let s=1;s<=5;s++){
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td>${s}</td>`;
-  for(let i=0;i<5;i++){ let td=document.createElement('td'); td.appendChild(crearSelect()); tr.appendChild(td); }
-  let pc=document.createElement('td'); pc.innerHTML='<input type="number" style="width:100%; border:none; text-align:center; color:blue;">'; tr.appendChild(pc);
-  for(let i=0;i<5;i++){ let td=document.createElement('td'); td.appendChild(crearSelect()); tr.appendChild(td); }
-  let pr=document.createElement('td'); pr.innerHTML='<input type="number" style="width:100%; border:none; text-align:center; color:blue;">'; tr.appendChild(pr);
-  setsBody.appendChild(tr);
-}
-
-let modoActual = "";
-let celdaActiva = null;
-let seleccionadosParaComparar = [];
-
-function iniciarActividad(tipo) {
-  modoActual = tipo;
-  document.getElementById('tituloPrincipal').innerText = "PLANILLA DE " + tipo + " - CReS";
-  document.getElementById('portada').style.display='none';
-  document.getElementById('app').style.display='block';
-
-  const colID = document.getElementById('columnaID');
-  let contenido = '<div style="height: 30px; font-weight: bold; background: #f0f0f0; border: 1px solid black; text-align: center; line-height: 30px; font-size: 10px;">ID</div>';
-  
-  for(let i=1; i<=12; i++) {
-    if(tipo === 'ENTRENAMIENTO') {
-      contenido += `<div style="height: 28px; background: #AEC6CF; border: 1px solid black; box-sizing: border-box;">
-                      <input type="text" placeholder="Jugadora" style="width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-size: 10px; font-weight: bold;">
-                    </div>`;
-    } else {
-      contenido += `<div style="height: 28px; font-weight: bold; background: #AEC6CF; border: 1px solid black; text-align: center; line-height: 28px; font-size: 12px; box-sizing: border-box;">${i}</div>`;
-    }
-  }
-  colID.innerHTML = contenido;
-}
-
-function seleccionarCelda(cell) {
-  document.querySelectorAll('.cell').forEach(c => c.style.backgroundColor = 'transparent');
-  cell.style.backgroundColor = '#FFB375';
-  celdaActiva = cell;
-}
-
-function cargarValorRapido(valor) {
-  if(celdaActiva) {
-    celdaActiva.innerText = valor;
-    actualizarPorcentajeFila(celdaActiva.parentElement);
-  } else { alert("Primero selecciona un casillero"); }
-}
-
-function actualizarPorcentajeFila(filaDiv) {
-  const celdasDatos = filaDiv.querySelectorAll('.cell');
-  const celdaPorc = filaDiv.querySelector('.porcentaje-celda');
-  const tipoAccion = celdasDatos[0].dataset.accion;
-  let positivos = 0, total = 0;
-  celdasDatos.forEach(div => {
-    const val = div.innerText.trim();
-    if (val !== '') {
-      total++;
-      if ((tipoAccion === 'RECEPCION' || tipoAccion === 'SAQUE') && (val === '+' || val === '++')) positivos++;
-      else if (tipoAccion === 'ATAQUE' && val === '+') positivos++;
-      else if (tipoAccion === 'BLOQUEO' && (val === '+' || val === '¡')) positivos++;
-    }
-  });
-  celdaPorc.innerText = total > 0 ? Math.round((positivos / total) * 100) + '%' : '0%';
-}
-
-function guardarPartido(){
-  const rival = document.getElementById('inputRival').value || 'Sin Nombre';
-  const fecha = document.getElementById('inputFecha').value || new Date().toLocaleDateString();
-  const partido = { tipo: modoActual, fecha, rival, html: document.getElementById('app').innerHTML };
-  let historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  historial.unshift(partido);
-  localStorage.setItem('partidos', JSON.stringify(historial));
-  alert(modoActual + ' GUARDADO');
-}
-
-function verHistorial(){
-  document.getElementById('portada').style.display='none';
-  document.getElementById('comparacion').style.display='none';
-  document.getElementById('app').style.display='none';
-  document.getElementById('historial').style.display='block';
-  
-  const lista = document.getElementById('listaHistorial');
-  lista.innerHTML='';
-  const historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  seleccionadosParaComparar = [];
-
-  historial.forEach((p, i)=>{
-    const div = document.createElement('div');
-    div.id = `item-historial-${i}`;
-    div.style = "border:1px solid black; padding:10px; margin:5px 0; background:white; display:flex; justify-content:space-between; cursor:pointer;";
-    div.innerHTML = `<span><strong>${p.tipo}:</strong> ${p.fecha} - ${p.rival}</span>`;
-    const btnE = document.createElement('button');
-    btnE.innerText = 'X';
-    btnE.onclick = (e)=>{ e.stopPropagation(); eliminarPartido(i); };
-    div.appendChild(btnE);
-    div.onclick = ()=> gestionarSeleccion(i);
-    lista.appendChild(div);
-  });
-}
-
-function gestionarSeleccion(i) {
-  const item = document.getElementById(`item-historial-${i}`);
-  const index = seleccionadosParaComparar.indexOf(i);
-
-  if (index > -1) {
-    seleccionadosParaComparar.splice(index, 1);
-    item.classList.remove('seleccionado');
-  } else {
-    if (seleccionadosParaComparar.length < 2) {
-      seleccionadosParaComparar.push(i);
-      item.classList.add('seleccionado');
-    } else {
-        cargarPartido(i);
-        return;
-    }
-  }
-
-  if (seleccionadosParaComparar.length === 2) {
-    if(confirm("¿Comparar estos dos registros?")) ejecutarComparacion();
-  }
-}
-
-function ejecutarComparacion() {
-  const historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  const p1 = historial[seleccionadosParaComparar[0]];
-  const p2 = historial[seleccionadosParaComparar[1]];
-  const divDestino = document.getElementById('tablaComparativa');
-
-  document.getElementById('historial').style.display='none';
-  document.getElementById('comparacion').style.display='block';
-
-  const extraerTotales = (htmlStr) => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlStr;
-    const porcentajes = tempDiv.querySelectorAll('.porcentaje-celda');
-    let sumas = { RECEPCION: 0, SAQUE: 0, ATAQUE: 0, BLOQUEO: 0, counts: {R:0, S:0, A:0, B:0} };
-    porcentajes.forEach((celda, idx) => {
-      let valor = parseInt(celda.innerText) || 0;
-      if (idx < 12) { sumas.RECEPCION += valor; sumas.counts.R++; }
-      else if (idx < 24) { sumas.SAQUE += valor; sumas.counts.S++; }
-      else if (idx < 36) { sumas.ATAQUE += valor; sumas.counts.A++; }
-      else if (idx < 48) { sumas.BLOQUEO += valor; sumas.counts.B++; }
-    });
-    return {
-      recepcion: Math.round(sumas.RECEPCION / sumas.counts.R),
-      saque: Math.round(sumas.SAQUE / sumas.counts.S),
-      ataque: Math.round(sumas.ATAQUE / sumas.counts.A),
-      bloqueo: Math.round(sumas.BLOQUEO / sumas.counts.B)
-    };
-  };
-
-  const res1 = extraerTotales(p1.html);
-  const res2 = extraerTotales(p2.html);
-  const acciones = ['recepcion', 'saque', 'ataque', 'bloqueo'];
-  let tablaHtml = `<table style="width:100%; border:1px solid black; margin-top:10px; border-collapse:collapse;">
-    <tr style="background:#f0f0f0;">
-      <th style="padding:10px;">ACCIÓN</th>
-      <th>${p1.fecha}<br><small>${p1.rival}</small></th>
-      <th>${p2.fecha}<br><small>${p2.rival}</small></th>
-      <th>DIF.</th>
-    </tr>`;
-
-  acciones.forEach(acc => {
-    const v1 = res1[acc], v2 = res2[acc], dif = v2 - v1;
-    tablaHtml += `<tr>
-      <td style="padding:10px; font-weight:bold; text-transform:uppercase;">${acc}</td>
-      <td>${v1}%</td><td>${v2}%</td>
-      <td style="color:${dif >= 0 ? 'green' : 'red'}; font-weight:bold;">${dif > 0 ? '+' : ''}${dif}%</td>
-    </tr>`;
-  });
-  divDestino.innerHTML = tablaHtml + `</table>`;
-}
-
-function cargarPartido(i){
-  const historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  document.getElementById('historial').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('app').innerHTML = historial[i].html;
-}
-
-function eliminarPartido(i){
-  let historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  historial.splice(i,1);
-  localStorage.setItem('partidos', JSON.stringify(historial));
-  verHistorial();
-}
-
-function volverInicio(){
-  document.getElementById('historial').style.display='none';
-  document.getElementById('portada').style.display='flex';
-}
-
-function volverPortada(){
-  if(confirm("¿Volver a la portada? Perderás los cambios no guardados.")) {
-    document.getElementById('app').style.display='none';
-    document.getElementById('portada').style.display='flex';
-  }
-}
-</script>
-</body>
-</html>
+    <button onclick="volverPortada()" style="flex: 1; padding: 15px; background: #555; color: white; border: none; border-radius: 8px; font-weight: bold; font
