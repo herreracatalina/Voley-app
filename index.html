@@ -1,313 +1,401 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> 
-<link rel="icon" href="logo.png">
-<link rel="apple-touch-icon" href="logo.png">
-<meta charset="UTF-8">
-<title>Planilla Vóley - CReS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-/* 1. RESET Y FONDO GRIS */
-body { 
-  font-family: Arial; 
-  background:#eaeaea; 
-  margin: 0;
-  padding: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  width: 100%;
+<head>
+    <meta charset="UTF-8">
+    <title>CReS VOLEY - Sistema de Estadísticas</title>
+    <style>
+        /* ESTILOS DE LA PORTADA */
+        #portada {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #eee;
+            text-align: center;
+        }
+        .logo-portada { width: 220px; margin-bottom: 15px; }
+        .nombre-club { font-weight: bold; color: #2c3e50; margin-bottom: 20px; font-size: 1rem; }
+        .btn-portada {
+            width: 240px;
+            padding: 12px;
+            margin: 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s;
+        }
+	.header-top button:hover {background-color: #7f8c8d !important;
 }
+        .btn-rojo { background-color: #e74c3c; }
+        .btn-gris { background-color: #555; }
+        .btn-portada:hover { transform: scale(1.05); }
 
-/* 2. CONTENEDOR DE LA APP */
-#app {
-  display: flex;
-  flex-direction: column;
-  align-items: center; 
-  width: 100%;
-  min-height: 100vh;
-}
 
-/* 3. LA HOJA BLANCA */
-.sheet { 
-  display: block;
-  width: fit-content; 
-  background: white; 
-  padding: 15px; 
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  box-sizing: border-box;
-  margin: 20px auto;
-} 
+        /* ESTILOS GENERALES DE LA PLANILLA */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 10px; margin: 0; }
+        .container { max-width: 1550px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin: auto; }
+        
+        /* CABECERA DINÁMICA */
+        .header-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e74c3c; margin-bottom: 15px; }
+        .modo-selector { background: #2c3e50; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+        
+        .header-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; width: 90%; font-size: 13px; }
+        .nombre-equipo { border: none; border-bottom: 1px solid #999; text-align: center; font-weight: bold; width: 85%; text-transform: uppercase; font-size: 1rem; background: transparent; }
 
-h2 { text-align:center; color:red; }
-table { border-collapse: collapse; width: 100%; margin: 0 auto; }
-td, th { border:1px solid black; text-align:center; font-size:12px; height:28px; line-height:28px; padding:0 5px; width:70px; overflow:hidden; white-space:nowrap; }
-#tablaSet th:first-child, #tablaSet td:first-child { width:33px; min-width:33px; max-width:33px; }
-th { background:#f0f0f0; font-size:11px; }
-select { width:100%; border:none; height:100%; font-size:12px; }
-.cell { cursor:pointer; box-sizing: border-box; }
-.seleccionado { background-color: #AEC6CF !important; }
+        #seccionFormaciones { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
+        .mini-cancha { border: 1px solid #34495e; border-radius: 4px; padding: 4px; text-align: center; background: #fafafa; }
+        .mini-cancha h4 { margin: 0 0 4px 0; font-size: 12px; color: #7f8c8d; }
+        .grilla-cancha { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; position: relative; padding-top: 4px; }
+        .grilla-cancha::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: red; }
+        .zona-input { width: 100%; height: 24px; text-align: center; font-weight: bold; border: 1px solid #bbb; padding: 0; font-size: 14px; }
 
-/* 4. ESTÉTICA RESALTADA Y ALINEADA */
-#columnaID {
-  display: grid; 
-  grid-template-rows: 30px repeat(12, 28px); 
-  min-width: 80px; 
-  flex-shrink: 0; 
-  border: 2px solid black; 
-  box-sizing: border-box;
-}
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: middle; }
+        th { background-color: #f8f9fa; font-size: 11px; text-transform: uppercase; }
 
-.accion-block {
-  display: grid; 
-  grid-template-rows: 30px repeat(12, 28px); 
-  width: 242px; /* Ajustado para compensar bordes internos */
-  border: 2px solid black; 
-  box-sizing: border-box; 
-  flex-shrink: 0;
-}
+        .btn-to { font-size: 10px; padding: 2px 5px; background: #f8f9fa; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; font-weight: bold; }
+        .to-pedido { background-color: #e74c3c !important; color: white !important; }
 
-.porcentaje-celda {
-  width: 40px; 
-  height: 28px; 
-  font-weight: bold; 
-  background: #3536BD; 
-  color: white; /* NUEVO: Texto blanco */
-  text-align: center; 
-  line-height: 28px; 
-  font-size: 11px;
-  border-left: 2px solid black; 
-  border-right: 2px solid black; 
-  box-sizing: border-box;
-}
-
-#gridEstadisticas {
-  display: flex;
-  gap: 5px;
-  max-width: 95vw;
-  margin: 0 auto;
-  overflow-x: auto;
-  background: white;
-  padding: 10px;
-  align-items: flex-start;
-  -webkit-overflow-scrolling: touch;
-}
-
-button { touch-action: manipulation; }
-</style>
+        .stat-val { font-size: 16px; color: white; background: #333; padding: 6px; border-radius: 4px; font-weight: bold; display: block; text-align: center; }
+        .btn-sig { border: 1px solid #bbb; background: #fff; padding: 12px 14px; cursor: pointer; border-radius: 6px; font-size: 16px; font-weight: bold; min-width: 48px; }
+        .hidden { display: none !important; }
+        .btn-save { background-color: #e74c3c; color: white; border: none; padding: 12px 30px; font-size: 16px; cursor: pointer; border-radius: 6px; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-<div id="portada" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; width: 100vw;">
-  <img src="logo.png" alt="Escudo CReS" style="width:240px; margin-bottom:10px; display:block; background:transparent;">
-
-  <button onclick="iniciarActividad('PARTIDO')" style="width:250px; padding:15px; font-size:16px; cursor:pointer; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">
-    INICIAR PARTIDO
-  </button>
-
-  <button onclick="iniciarActividad('ENTRENAMIENTO')" style="width:250px; padding:15px; font-size:16px; cursor:pointer; background:#d32f2f; color:white; border:none; border-radius:8px; font-weight:bold; margin-bottom:10px;">
-    INICIAR ENTRENAMIENTO
-  </button>
-
-  <button onclick="verHistorial()" style="width:250px; padding:15px; font-size:16px; cursor:pointer; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">
-    HISTORIAL
-  </button>
-
-  <svg width="260" height="120" viewBox="0 0 260 120" style="margin-top:10px;">
-    <defs><path id="curve" d="M20,90 A110,110 0 0,0 240,90" /></defs>
-    <text font-size="16" fill="black" font-family="Arial" font-weight="600">
-      <textPath href="#curve" startOffset="50%" text-anchor="middle">CLUB RESIDENTES SANTIAGUEÑOS</textPath>
-    </text>
-  </svg>
+<div id="portada">
+    <img src="logo.png" alt="CReS Voley" class="logo-portada">
+    <button class="btn-portada btn-rojo" onclick="iniciarSesion('PARTIDO')">INICIAR PARTIDO</button>
+    <button class="btn-portada btn-rojo" onclick="iniciarSesion('ENTRENAMIENTO')">INICIAR ENTRENAMIENTO</button>
+    <button class="btn-portada btn-gris" onclick="alert('Historial próximamente disponible localmente.')">HISTORIAL</button>
 </div>
 
-<div id="historial" style="display:none; padding:20px; width: 100%; box-sizing: border-box;">
-  <h2>HISTORIAL</h2>
-  <div id="listaHistorial"></div>
-  <br>
-  <button onclick="volverInicio()" style="padding:15px; width:100%; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">VOLVER</button>
+<div id="app" class="container hidden">
+    <div class="header-top">
+    <h2 id="tituloSesion">ESTADÍSTICA DE VÓLEY</h2>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div id="badgeModo" class="modo-selector">MODO: PARTIDO</div>
+        <button onclick="volverAPortada()" style="background: #95a5a6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">
+            VOLVER
+        </button>
+    </div>
 </div>
-
-<div id="comparacion" style="display:none; padding:20px; width: 100%; background: white; box-sizing: border-box;">
-  <h2 style="color: blue;">COMPARATIVA DE RENDIMIENTO</h2>
-  <div id="tablaComparativa" style="overflow-x: auto;"></div>
-  <br>
-  <button onclick="verHistorial()" style="width:100%; padding:15px; background:#555; color:white; border:none; border-radius:8px; font-weight:bold;">VOLVER AL HISTORIAL</button>
-</div>
-
-<div id="app" style="display:none;">
-    <div class="sheet">
-      <div style="margin-bottom:10px;">
-        <strong>Fecha:</strong> <input type="date" id="inputFecha">
-      </div>
-
-      <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-          <button onclick="volverPortada()" style="flex: 1; padding: 10px; background: #555; color: white; border: none; border-radius: 8px; font-weight: bold;">VOLVER</button>
-          <button onclick="guardarPartido()" style="flex: 1; padding: 10px; background: #555; color: white; border: none; border-radius: 8px; font-weight: bold;">GUARDAR</button>
-      </div>
-
-      <h2 id="tituloPrincipal">PLANILLA DE ESTADÍSTICA - CReS</h2>
-
-      <div style="margin-bottom:10px;">
-        <strong>Rival:</strong> <input type="text" id="inputRival" style="border:1px solid black;">
-      </div>
-
-      <table id="tablaSet">
-        <thead>
-          <tr><th rowspan="2">SET</th><th colspan="6">CReS</th><th colspan="6">RIVAL</th></tr>
-          <tr><th>Saque</th><th>Err.R</th><th>Atq</th><th>Contr</th><th>Bloq</th><th>Puntos</th><th>Saque</th><th>Err.C</th><th>Atq</th><th>Contr</th><th>Bloq</th><th>Puntos</th></tr>
-        </thead>
-        <tbody id="setsBody"></tbody>
-      </table>
-
-      <h3 style="margin-top:20px; border-top:2px solid black; padding-top:10px; color:red; text-align: center;">ESTADÍSTICAS JUGADORAS</h3>
-
-      <div id="controlesRapidos" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 20px; background: #f0f0f0; padding: 10px; border-radius: 8px; border: 1px solid #ccc; max-width: 600px; margin: 0 auto 20px auto;">
-        <button onclick="cargarValorRapido('++')">++</button>
-        <button onclick="cargarValorRapido('+')">+</button>
-        <button onclick="cargarValorRapido('0')">0</button>
-        <button onclick="cargarValorRapido('-')">-</button>
-        <button onclick="cargarValorRapido('--')">--</button>
-        <button onclick="cargarValorRapido('¡')">¡</button>
-      </div>
-
-      <div id="gridEstadisticas">
-        <div id="columnaID"></div>
-        <script>
-          const MAX_ACCIONES = 8; 
-          const accionesConfig = [
-            {nombre:'RECEPCION'},
-            {nombre:'SAQUE'},
-            {nombre:'ATAQUE'},
-            {nombre:'BLOQUEO'}
-          ];
-          accionesConfig.forEach(acc => {
-  let tablaHtml = `<div class="accion-block">
-    <div style="display: grid; grid-template-columns: repeat(${MAX_ACCIONES}, 25px) 40px; height: 30px; border-bottom: 2px solid black; box-sizing: border-box;">
-      <div style="grid-column: span ${MAX_ACCIONES}; background: #eee; text-align: center; line-height: 30px; font-size: 10px; font-weight: bold; box-sizing: border-box;">${acc.nombre}</div>
-      <div style="background: #3536BD; color: white; text-align: center; line-height: 30px; font-size: 11px; font-weight: bold; border-left: 2px solid black; border-right: 2px solid black; box-sizing: border-box;">%</div>
-    </div>`;
     
-  for(let i=1; i<=12; i++) {
-    tablaHtml += `<div style="display: grid; grid-template-columns: repeat(${MAX_ACCIONES}, 25px) 40px; height: 28px; border-bottom: 1px solid #ccc; box-sizing: border-box;">`;
-    for(let j=0; j<MAX_ACCIONES; j++) {
-      tablaHtml += `<div class='cell' data-accion="${acc.nombre}" onclick='seleccionarCelda(this)' style="width: 25px; height: 27px; border-right: 1px solid #eee; text-align: center; line-height: 27px; font-size: 11px; box-sizing: border-box;"></div>`;
-    }
-    tablaHtml += `<div class="porcentaje-celda">0%</div>`;
-    tablaHtml += `</div>`;
-  }
-  tablaHtml += `</div>`;
-  document.write(tablaHtml);
-});
-        </script>
-      </div>
+    <div class="header-info">
+        <input type="text" id="fecha" placeholder="Fecha">
+        <input type="text" id="categoria" placeholder="Categoría">
+        <input type="text" id="sorteo" placeholder="Torneo / Observaciones">
+    </div>
+
+    <div id="seccionFormaciones"></div>
+
+    <h3>CONTROL POR SETS</h3>
+    <table id="tablaSets">
+        <thead>
+            <tr>
+                <th style="width:30px">SET</th>
+                <th colspan="6"><input type="text" id="eqL" class="nombre-equipo" placeholder="LOCAL"></th>
+                <th style="width:100px; background:#eee">VS</th>
+                <th colspan="6"><input type="text" id="eqR" class="nombre-equipo" placeholder="RIVAL"></th>
+                <th style="width:130px">EXTRAS</th>
+            </tr>
+            <tr style="font-size: 10px; background: #eee;">
+                <th></th>
+                <th>SAQUE</th><th>ERROR SAQUE RIVAL</th><th>ATAQUE</th><th>CONTRA ATAQUE</th><th>BLOQUEO</th><th>ERROR N/F RIVAL</th>
+                <th>PUNTOS</th>
+                <th>SAQUE</th><th>ERROR SAQUE RIVAL</th><th>ATAQUE</th><th>CONTRA ATAQUE</th><th>BLOQUEO</th><th>ERROR N/F RIVAL</th>
+                <th>CAMBIOS</th>
+            </tr>
+        </thead>
+        <tbody id="bodySets"></tbody>
+    </table>
+
+    <h3>DETALLE INDIVIDUAL</h3>
+    <table id="tablaIndividual">
+        <thead>
+            <tr>
+                <th style="width:95px">N° / ROL</th>
+                <th style="width:150px">Nombre</th>
+                <th style="background:#fff5f5" id="th-rec">RECEPCIÓN</th>
+                <th style="background:#fef0ff" id="th-def">DEFENSA</th>
+                <th style="background:#e8f8f5" id="th-arm">ARMADO</th>
+                <th style="background:#f5fff5" id="th-atk">ATAQUE</th>
+                <th style="background:#f5f5ff" id="th-saq">SAQUE</th>
+                <th style="background:#fffaf0" id="th-blo">BLOQUEO</th>
+            </tr>
+        </thead>
+        <tbody id="jugadorasBody"></tbody>
+    </table>
+    <button style="padding:10px; background:#3498db; color:white; border:none; border-radius:4px; cursor:pointer;" onclick="agregarFila()">+ Agregar Jugadora</button>
+
+    <div style="text-align:center; margin-top:20px;">
+        <button class="btn-save" onclick="guardarPartido()">DESCARGAR RESUMEN (.TXT)</button>
+        <p style="font-size: 11px; color: #7f8c8d; margin-top: 5px;">CReS Voley App v2.0</p>
     </div>
 </div>
 
 <script>
-// LÓGICA DE TABLA DE SETS
-const setsBody = document.getElementById('setsBody');
-function crearSelect(){
-  const select = document.createElement('select');
-  select.innerHTML = '<option value="">-</option>';
-  for(let i=1;i<=30;i++) select.innerHTML += `<option>${i}</option>`;
-  return select;
-}
-for(let s=1;s<=5;s++){
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td>${s}</td>`;
-  for(let i=0;i<10;i++){ 
-    let td=document.createElement('td'); 
-    td.appendChild(crearSelect()); 
-    tr.appendChild(td);
-    if(i===4 || i===9) {
-      let tdP = document.createElement('td');
-      tdP.innerHTML='<input type="number" style="width:100%; border:none; text-align:center; color:blue;">';
-      tr.appendChild(tdP);
+    let modoActual = "PARTIDO";
+    let contadorJugadoras = 0;
+    let datosJugadoras = {};
+    const colsSet = ['saque', 'errSaq', 'ataque', 'contra', 'bloque', 'errNF'];
+
+    function iniciarSesion(modo) {
+        modoActual = modo;
+        document.getElementById('portada').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('badgeModo').innerText = "MODO: " + modo;
+        document.getElementById('tituloSesion').innerText = modo === 'PARTIDO' ? 'ESTADÍSTICA DE PARTIDO' : 'SESIÓN DE ENTRENAMIENTO';
+        init();
     }
-  }
-  setsBody.appendChild(tr);
-}
 
-let modoActual = "";
-let celdaActiva = null;
+    function init() {
+        const contCanchas = document.getElementById('seccionFormaciones');
+        contCanchas.innerHTML = "";
+        for(let i=1; i<=5; i++) {
+            let div = document.createElement('div');
+            div.className = 'mini-cancha';
+            div.innerHTML = `<h4>Set ${i}</h4><div class="grilla-cancha">` + 
+                [4,3,2,5,6,1].map(z => `<input type="text" class="zona-input" id="F${z}-S${i}" placeholder="${z}">`).join('') + `</div>`;
+            contCanchas.appendChild(div);
+        }
 
-function iniciarActividad(tipo) {
-  modoActual = tipo;
-  document.getElementById('tituloPrincipal').innerText = "PLANILLA DE " + tipo + " - CReS";
-  document.getElementById('portada').style.display='none';
-  document.getElementById('app').style.display='block';
-
-  const colID = document.getElementById('columnaID');
-  let contenido = '<div style="height: 30px; font-weight: bold; background: #f0f0f0; border-bottom: 2px solid black; text-align: center; line-height: 30px; font-size: 10px; box-sizing: border-box;">ID</div>';
-  for(let i=1; i<=12; i++) {
-    let styleRow = "height: 28px; border-bottom: 1px solid black; box-sizing: border-box; display: flex; align-items: center; justify-content: center;";
-    if(tipo === 'ENTRENAMIENTO') {
-      contenido += `<div style="${styleRow} background: #AEC6CF;"><input type="text" placeholder="Jugadora" style="width:100%; height:100%; border:none; background:transparent; text-align:center; font-size:10px;"></div>`;
-    } else {
-      contenido += `<div style="${styleRow} font-weight: bold; background: #AEC6CF; font-size: 12px;">${i}</div>`;
+        const bSets = document.getElementById('bodySets');
+        bSets.innerHTML = "";
+        for(let i=1; i<=5; i++) {
+            let tr = document.createElement('tr');
+            let h = `<td style="background:#f9f9f9"><b>${i}°</b></td>`;
+            colsSet.forEach(c => h += `<td><span id="L-${c}-${i}">0</span><br><button style="background:#3498db;color:white;border:none;border-radius:3px;cursor:pointer" onclick="sumSet('L-${c}-${i}','sL-${i}',1)">+</button></td>`);
+            h += `<td style="width:100px; background: #fdfdfd;">
+                    <div style="display:flex; gap:3px; justify-content:center; margin-bottom:5px;">
+                        <button id="TOL1-S${i}" class="btn-to" onclick="marcarTO('TOL1-S${i}')">T1</button>
+                        <button id="TOL2-S${i}" class="btn-to" onclick="marcarTO('TOL2-S${i}')">T2</button>
+                    </div>
+                    <div style="font-size:16px; font-weight:bold;"><span id="sL-${i}">0</span>-<span id="sR-${i}">0</span></div>
+                    <div style="display:flex; gap:3px; justify-content:center; margin-top:5px;">
+                        <button id="TOR1-S${i}" class="btn-to" onclick="marcarTO('TOR1-S${i}')">T1</button>
+                        <button id="TOR2-S${i}" class="btn-to" onclick="marcarTO('TOR2-S${i}')">T2</button>
+                    </div>
+                  </td>`;
+            colsSet.forEach(c => h += `<td><span id="R-${c}-${i}">0</span><br><button style="background:#3498db;color:white;border:none;border-radius:3px;cursor:pointer" onclick="sumSet('R-${c}-${i}','sR-${i}',1)">+</button></td>`);
+            
+            h += `<td style="width:125px; vertical-align: top; padding: 10px 5px;">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                    <div><span id="sub-S${i}" style="font-weight:bold; font-size:14px">0</span><span style="font-size:10px; color:#666;">/6</span></div>
+                    <button style="width: 100%; padding: 5px 2px; font-size: 11px; background:#3498db; color:white; border:none; border-radius:3px; cursor:pointer;" onclick="sumarCambio(${i})">REGISTRAR CAMBIO</button>
+                    <input type="text" placeholder="Historial" style="width:100%; font-size:9px; color:#666; border:1px solid #ddd; background:#fdfdfd; text-align:center; box-sizing:border-box;" readonly>
+                </div>
+            </td>`;
+            tr.innerHTML = h; bSets.appendChild(tr);
+        }
+        agregarFila();
     }
-  }
-  colID.innerHTML = contenido;
-}
 
-function seleccionarCelda(cell) {
-  document.querySelectorAll('.cell').forEach(c => c.style.backgroundColor = 'transparent');
-  cell.style.backgroundColor = '#FFB375';
-  celdaActiva = cell;
-}
+    function marcarTO(id) { document.getElementById(id).classList.toggle('to-pedido'); }
 
-function cargarValorRapido(valor) {
-  if(celdaActiva) {
-    celdaActiva.innerText = valor;
-    actualizarPorcentajeFila(celdaActiva.parentElement);
-  }
-}
-
-function actualizarPorcentajeFila(filaDiv) {
-  const celdasDatos = filaDiv.querySelectorAll('.cell');
-  const celdaPorc = filaDiv.querySelector('.porcentaje-celda');
-  const tipoAccion = celdasDatos[0].dataset.accion;
-  let positivos = 0, total = 0;
-  celdasDatos.forEach(div => {
-    const val = div.innerText.trim();
-    if (val !== '') {
-      total++;
-      if ((tipoAccion === 'RECEPCION' || tipoAccion === 'SAQUE') && (val === '+' || val === '++')) positivos++;
-      else if (tipoAccion === 'ATAQUE' && val === '+') positivos++;
-      else if (tipoAccion === 'BLOQUEO' && (val === '+' || val === '¡')) positivos++;
+    function sumarCambio(set) {
+        let span = document.getElementById('sub-S' + set);
+        let actual = parseInt(span.innerText);
+        if (actual < 6) {
+            let scoreL = document.getElementById('sL-' + set).innerText;
+            let scoreR = document.getElementById('sR-' + set).innerText;
+            let detalle = prompt("¿Quién entra por quién? (ej: 10x4)");
+            if (detalle !== null) {
+                span.innerText = actual + 1;
+                let inputHistorial = document.querySelector(`#bodySets tr:nth-child(${set}) td:last-child input`);
+                let nuevo = `Pto ${scoreL}-${scoreR}: ${detalle}`;
+                inputHistorial.value = inputHistorial.value ? inputHistorial.value + " | " + nuevo : nuevo;
+            }
+        } else { alert("Límite de 6 cambios alcanzado."); }
     }
-  });
-  celdaPorc.innerText = total > 0 ? Math.round((positivos / total) * 100) + '%' : '0%';
-}
 
-function guardarPartido(){
-  const rival = document.getElementById('inputRival').value || 'Sin Nombre';
-  const fecha = document.getElementById('inputFecha').value || new Date().toLocaleDateString();
-  const partido = { tipo: modoActual, fecha, rival, html: document.getElementById('app').innerHTML };
-  let historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  historial.unshift(partido);
-  localStorage.setItem('partidos', JSON.stringify(historial));
-  alert('GUARDADO CORRECTAMENTE');
-}
+    function sumSet(idC, idS, v) {
+        let c = document.getElementById(idC); let s = document.getElementById(idS);
+        c.innerText = Math.max(0, parseInt(c.innerText) + v);
+        s.innerText = Math.max(0, parseInt(s.innerText) + v);
+    }
 
-function verHistorial(){
-  document.getElementById('portada').style.display='none';
-  document.getElementById('app').style.display='none';
-  document.getElementById('historial').style.display='block';
-  const lista = document.getElementById('listaHistorial');
-  lista.innerHTML='';
-  const historial = JSON.parse(localStorage.getItem('partidos') || '[]');
-  historial.forEach((p, i)=>{
-    const div = document.createElement('div');
-    div.style = "border:1px solid black; padding:10px; margin:5px 0; background:white; cursor:pointer;";
-    div.innerHTML = `<strong>${p.tipo}:</strong> ${p.fecha} - ${p.rival}`;
-    div.onclick = ()=> { document.getElementById('app').innerHTML = p.html; document.getElementById('historial').style.display='none'; document.getElementById('app').style.display='block'; };
-    lista.appendChild(div);
-  });
-}
+    function agregarFila() {
+        contadorJugadoras++;
+        datosJugadoras[contadorJugadoras] = { rec:{pp:0,p:0,m:0,mm:0}, atk:{p:0,m:0,n:0}, saq:{pp:0,p:0,m:0,mm:0}, blo:{p:0,sn:0,m:0}, def:{p:0,m:0,n:0}, arm:{p:0,m:0} };
+        const tb = document.getElementById('jugadorasBody');
+        let tr = document.createElement('tr');
+        tr.id = `fila-${contadorJugadoras}`;
+        tr.innerHTML = `
+            <td><div style="display:flex; flex-direction:column; gap:2px;"><input type="text" style="font-size:18px; font-weight:bold; text-align:center; border:none; border-bottom:2px solid #3498db;" placeholder="N°">
+                <select style="font-size:10px;" onchange="cambiarRol(${contadorJugadoras}, this.value)">
+                    <option value="PUNTA">PUNTA</option><option value="CENTRAL">CENTRAL</option><option value="ARMADORA">ARMADORA</option><option value="OPUESTA">OPUESTA</option><option value="LIBERO">LIBERO</option>
+                </select></div></td>
+            <td><input type="text" style="width:95%; border:none; font-size:16px;" placeholder="Nombre"></td>
+            <td id="td-rec-${contadorJugadoras}">${crearBotones('rec',['pp','p','m','mm'],['++','+','-','--'], contadorJugadoras)}</td>
+            <td id="td-def-${contadorJugadoras}">${crearBotones('def',['p','m','n'],['+','-','0'], contadorJugadoras)}</td>
+            <td id="td-arm-${contadorJugadoras}">${crearBotones('arm',['p','m'],['+','-'], contadorJugadoras)}</td>
+            <td id="td-atk-${contadorJugadoras}">${crearBotones('atk',['p','m','n'],['+','-','0'], contadorJugadoras)}</td>
+            <td id="td-saq-${contadorJugadoras}">${crearBotones('saq',['pp','p','m','mm'],['++','+','-','--'], contadorJugadoras)}</td>
+            <td id="td-blo-${contadorJugadoras}">${crearBotones('blo',['p','sn','m'],['+','¡','-'], contadorJugadoras)}</td>`;
+        tb.appendChild(tr);
+        cambiarRol(contadorJugadoras, "PUNTA");
+    }
 
-function volverInicio(){ document.getElementById('historial').style.display='none'; document.getElementById('portada').style.display='flex'; }
-function volverPortada(){ document.getElementById('app').style.display='none'; document.getElementById('portada').style.display='flex'; }
+    function cambiarRol(id, rol) {
+        const config = {
+            'PUNTA':    ['rec', 'atk', 'saq', 'blo'],
+            'CENTRAL':  ['atk', 'saq', 'blo'],
+            'OPUESTA':  ['atk', 'saq', 'blo'],
+            'LIBERO':   ['rec', 'def'],
+            'ARMADORA': ['arm', 'saq', 'blo']
+        };
+        const permitidos = config[rol] || [];
+        const todas = ['rec', 'def', 'arm', 'atk', 'saq', 'blo'];
+
+        todas.forEach(accion => {
+            const td = document.getElementById(`td-${accion}-${id}`);
+            if (permitidos.includes(accion)) {
+                td.style.opacity = "1";
+                td.style.pointerEvents = "auto";
+                td.style.background = ""; // Mantiene el color original de la columna
+            } else {
+                td.style.opacity = "0.1"; // Lo deja casi invisible pero mantiene el espacio
+                td.style.pointerEvents = "none"; // No se puede clickear
+                td.style.background = "#f9f9f9";
+            }
+        });
+    }
+
+    function volverAPortada() {
+        if (confirm("¿Estás seguro de volver? Se perderán los datos que no hayas guardado.")) {
+            location.reload(); 
+        }
+    }
+
+    function crearBotones(tipo, ids, txts, jId) {
+        let b = `<div style="display:flex; flex-direction:column; align-items:center; gap:4px;"><div>`;
+        ids.forEach((id, i) => { b += `<button class="btn-sig" onclick="sumEfi('${tipo}','${id}',${jId},1)" oncontextmenu="sumEfi('${tipo}','${id}',${jId},-1);return false">${txts[i]}</button>`; });
+        return b + `</div><span class="stat-val" style="width:80%" id="val-${tipo}-${jId}">-</span></div>`;
+    }
+
+    function sumEfi(t, s, j, v) {
+        datosJugadoras[j][t][s] = Math.max(0, datosJugadoras[j][t][s] + v);
+        let res = []; const labels = {pp:'++', p:'+', m:'-', mm:'--', n:'0', sn:'¡'};
+        for (let k in datosJugadoras[j][t]) { if(datosJugadoras[j][t][k]>0) res.push(`${labels[k]}:${datosJugadoras[j][t][k]}`); }
+        document.getElementById(`val-${t}-${j}`).innerText = res.join(' ') || "-";
+    }
+
+  function guardarPartido() {
+    const l = (document.getElementById('eqL').value || "LOCAL").toUpperCase();
+    const r = (document.getElementById('eqR').value || "RIVAL").toUpperCase();
+    const fecha = document.getElementById('fecha').value || "Sin fecha";
+    const cat = document.getElementById('categoria').value || "General";
+
+    let txt = `==========================================\n`;
+    txt += `    REPORTE DE SESIÓN - CReS VOLEY\n`;
+    txt += `==========================================\n`;
+    txt += `MODO: ${modoActual}\n`;
+    txt += `FECHA: ${fecha} | CATEGORÍA: ${cat}\n`;
+    txt += `PARTIDO: ${l} vs ${r}\n`;
+    txt += `------------------------------------------\n\n`;
+
+    // SECCIÓN 1: FORMACIONES POR SET (NUEVA)
+    txt += `[ FORMACIONES INICIALES ]\n`;
+    for(let i=1; i<=5; i++) {
+        // Obtenemos los valores de la mini-cancha para el set i
+        const p4 = document.getElementById(`F4-S${i}`).value || "-";
+        const p3 = document.getElementById(`F3-S${i}`).value || "-";
+        const p2 = document.getElementById(`F2-S${i}`).value || "-";
+        const p5 = document.getElementById(`F5-S${i}`).value || "-";
+        const p6 = document.getElementById(`F6-S${i}`).value || "-";
+        const p1 = document.getElementById(`F1-S${i}`).value || "-";
+
+        // Solo agregamos el set si hay al menos un número cargado
+        if([p4,p3,p2,p5,p6,p1].some(val => val !== "-")) {
+            txt += `SET ${i}:\n`;
+            txt += `   (IV) ${p4.padEnd(3)} (III) ${p3.padEnd(3)} (II) ${p2.padEnd(3)}\n`;
+            txt += `   (V)  ${p5.padEnd(3)} (VI)  ${p6.padEnd(3)} (I)  ${p1.padEnd(3)}\n`;
+            txt += `-------------------\n`;
+        }
+    }
+    txt += `\n`;
+
+    // SECCIÓN 2: RESUMEN TOTAL POR EQUIPO
+    txt += `[ RESUMEN TOTAL POR EQUIPO ]\n`;
+    txt += `${'FUNDAMENTO'.padEnd(20)} | ${l.padEnd(10)} | ${r.padEnd(10)}\n`;
+    txt += `------------------------------------------\n`;
+
+    colsSet.forEach(c => {
+        let totalL = 0;
+        let totalR = 0;
+        for(let i=1; i<=5; i++) {
+            totalL += parseInt(document.getElementById(`L-${c}-${i}`).innerText) || 0;
+            totalR += parseInt(document.getElementById(`R-${c}-${i}`).innerText) || 0;
+        }
+        const nombresFundamento = {
+            'saque': 'Puntos Saque',
+            'errSaq': 'Err. Saque Rival',
+            'ataque': 'Ataque',
+            'contra': 'Contra Ataque',
+            'bloque': 'Bloqueo',
+            'errNF': 'Error N/F Rival'
+        };
+        txt += `${nombresFundamento[c].padEnd(20)} | ${totalL.toString().padEnd(10)} | ${totalR.toString().padEnd(10)}\n`;
+    });
+    txt += `------------------------------------------\n\n`;
+
+    // SECCIÓN 3: CONTROL POR SETS
+    txt += `[ CONTROL POR SETS ]\n`;
+    for(let i=1; i<=5; i++) {
+        const sL = document.getElementById('sL-'+i).innerText;
+        const sR = document.getElementById('sR-'+i).innerText;
+        if (sL !== "0" || sR !== "0") {
+            const camb = document.getElementById(`sub-S${i}`).innerText;
+            const det = document.querySelector(`#bodySets tr:nth-child(${i}) td:last-child input`).value;
+            txt += `SET ${i}: ${sL.padStart(2)} - ${sR.padEnd(2)} | Cambios: ${camb}/6 ${det ? '-> '+det : ''}\n`;
+        }
+    }
+
+    // SECCIÓN 4: DETALLE INDIVIDUAL
+    txt += `\n[ DETALLE INDIVIDUAL ]\n`;
+    txt += `${"N°".padEnd(4)} | ${"JUGADORA".padEnd(15)} | ESTADÍSTICAS\n`;
+    txt += `--------------------------------------------------\n`;
+
+    const filas = document.querySelectorAll('#jugadorasBody tr[id^="fila-"]');
+    filas.forEach(f => {
+        const id = f.id.split('-')[1];
+        const nro = f.querySelector('input[placeholder="N°"]').value || "??";
+        const nombre = f.querySelector('input[placeholder="Nombre"]').value || "Sin Nombre";
+        
+        let statsFinales = [];
+        const categorias = datosJugadoras[id];
+
+        for (let cat in categorias) {
+            let subStats = [];
+            const labels = {pp:'++', p:'+', m:'-', mm:'--', n:'0', sn:'¡'};
+            for (let sub in categorias[cat]) {
+                if (categorias[cat][sub] > 0) {
+                    subStats.push(`${labels[sub]}${categorias[cat][sub]}`);
+                }
+            }
+            if (subStats.length > 0) {
+                statsFinales.push(`${cat.toUpperCase()}(${subStats.join(',')})`);
+            }
+        }
+        txt += `${nro.padEnd(4)} | ${nombre.padEnd(15)} | ${statsFinales.join(' | ') || 'Sin acciones'}\n`;
+    });
+
+    txt += `\n------------------------------------------\n`;
+    txt += `Generado por CReS Voley App v2.0`;
+
+    const blob = new Blob([txt], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${modoActual}_${l}_vs_${r}.txt`;
+    a.click();
+}
 </script>
 </body>
 </html>
